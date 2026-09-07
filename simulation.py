@@ -18,7 +18,7 @@ v0 = np.array([0.0, 1.1 * v_kreis])
 r0_norm = np.linalg.norm(r0)
 v0_norm = np.linalg.norm(v0)
 
-E_spec = 0.5 * v0_norm**2 - (G * M) / r0_norm # specivic energy / energia especifica
+E_spec = 0.5 * v0_norm**2 - (G * M) / r0_norm # specific energy / energia especifica
 a = - (G * M) / (2.0 * E_spec)
 h = r0[0] * v0[1] - r0[0] * v0[0] # momentum / momento
 epsilon = np.sqrt(1.0 - (h**2) / (G * M * a))
