@@ -13,7 +13,7 @@ mu = (m1 * m2) / M
 r0 = np.array([1.0, 0.0]) # Initial position / Position initala
 v_kreis = np.sqrt(G * M / np.linalg.norm(r0)) # velocity for a circle / velocidad para un circulo
 # For a flatter ellipse, use e.g., 1.35 / Para una elipse más plana, usa p.ej. 1.35
-v0 = np.array([0.0, 1.1 * v_kreis])
+v0 = np.array([0.0, 1.2 * v_kreis])
 p0 = v0 * mu
 
 # --- Calculate orbital prameters / Calcular parámetros orbitales ---
@@ -56,9 +56,13 @@ for i, t in enumerate(t_eval):
     
     
 # --- Calculate numerical solution using Euler explicit, implicit and symplectic
+def grav_force(r):
+    r_norm = np.linalg.norm(r)
+    return -(G * M * mu) * r / (r_norm**3)
 
-delta_t = 0.1
-n_steps = int(T_orbit/delta_t)
+# Explicit Euler
+delta_t = 0.01
+n_steps = int(T_orbit/delta_t)*4
 
 r_explicit = np.zeros((n_steps + 1, 2))
 p_explicit = np.zeros((n_steps + 1, 2))
@@ -69,19 +73,42 @@ for i in range(n_steps):
     r_old = r_explicit[i]
     p_old = p_explicit[i]
     
-    r_norm = np.linalg.norm(r_old)
-
-    F = -(G * M * mu) * r_old / (r_norm**3)
-
     r_explicit[i+1] = r_old + delta_t * (p_old / mu)
-    p_explicit[i+1] = p_old + delta_t * F
+    p_explicit[i+1] = p_old + delta_t * grav_force(r_old)
 
+# Implicit Euler
+
+n_steps = n_steps
+r_implicit = np.zeros((n_steps + 1, 2))
+p_implicit = np.zeros((n_steps + 1, 2))
+r_implicit[0] = r0
+p_implicit[0] = p0
+
+for i in range(n_steps):
+    r_old = r_implicit[i]
+    p_old = p_implicit[i]
+    
+    def residual(r_next):
+        return r_next - r_old - (delta_t / mu) * p_old - (delta_t**2 / mu) * grav_force(r_next)
+    
+    r_guess = r_old + delta_t * (p_old/ mu) #explicit step
+    
+    sol = root(residual, r_guess)
+    r_next = sol.x
+    
+    p_next = p_old + delta_t * grav_force(r_next)
+    
+    r_implicit[i+1] = r_next
+    p_implicit[i+1] = p_next
+    
     
 # --- Visualización ---
 plt.figure(figsize=(8, 6))
-plt.plot(r_analytical[:, 0], r_analytical[:, 1], label="analytical solution", color="black")
-plt.plot(0, 0, 'ro', label="Schwerpunkt")
 plt.plot(r_explicit[:, 0], r_explicit[:, 1], label="explicit Euler", color="blue")
+plt.plot(r_implicit[:, 0], r_implicit[:, 1], label="implicit Euler", color="green")
+plt.plot(r_analytical[:, 0], r_analytical[:, 1], label="analytical solution", color="red")
+
+plt.plot(0, 0, 'ro', label="Schwerpunkt")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title(f"Zweikörperproblem - Analytische Bahn (ε = {epsilon:.2f})")
