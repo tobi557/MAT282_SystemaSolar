@@ -62,7 +62,7 @@ def grav_force(r):
 
 # Explicit Euler
 delta_t = 0.01
-n_steps = int(T_orbit/delta_t)*4
+n_steps = int(T_orbit/delta_t)*2
 
 r_explicit = np.zeros((n_steps + 1, 2))
 p_explicit = np.zeros((n_steps + 1, 2))
@@ -102,17 +102,33 @@ for i in range(n_steps):
     p_implicit[i+1] = p_next
     
     
-# --- Visualización ---
+# --- Visualization of the relative vector between the two bodies---
 plt.figure(figsize=(8, 6))
 plt.plot(r_explicit[:, 0], r_explicit[:, 1], label="explicit Euler", color="blue")
 plt.plot(r_implicit[:, 0], r_implicit[:, 1], label="implicit Euler", color="green")
-plt.plot(r_analytical[:, 0], r_analytical[:, 1], label="analytical solution", color="red")
+plt.plot(r_analytical[:, 0], r_analytical[:, 1], label="analytical solution", color="black")
 
-plt.plot(0, 0, 'ro', label="Schwerpunkt")
+plt.plot(0, 0, 'ro', label="Centro de masa")
+plt.plot(1, 0, 'k^', label = "Punto de partida")
+
+
+#Visualizacion de los dos cuerpos:
+# Conversión del vector relativo a coordenadas del centro de masa
+# r1 = +(m2 / M) * r  und  r2 = -(m1 / M) * r
+r1_analytical = (m2 / M) * r_analytical
+r2_analytical = -(m1 / M) * r_analytical
+
+# plot of the two bodies
+plt.plot(r1_analytical[:, 0], r1_analytical[:, 1], label="Cuerpo 1 (analítico)", color="red")
+plt.plot(r2_analytical[:, 0], r2_analytical[:, 1], label="Cuerpo 2 (analítico)", color="orange")
+
 plt.xlabel("x")
 plt.ylabel("y")
-plt.title(f"Zweikörperproblem - Analytische Bahn (ε = {epsilon:.2f})")
+plt.title(f"Problema de los dos cuerpos (ε = {epsilon:.2f})")
 plt.axis("equal")
-plt.legend()
+plt.legend(loc='lower left')
 plt.grid(True)
+plt.plot(0.5, 0, 'k^', label = "Punto de partida")
+plt.plot(-0.5, 0, 'kv', label = "Punto de partida")
+
 plt.show()
