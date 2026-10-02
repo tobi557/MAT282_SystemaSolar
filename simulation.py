@@ -132,3 +132,65 @@ plt.plot(0.5, 0, 'k^', label = "Punto de partida")
 plt.plot(-0.5, 0, 'kv', label = "Punto de partida")
 
 plt.show()
+
+
+
+#--IMPLICIT-EULER-IMPROOVED--########################################
+# --- 1. Newton-Raphson-Schritt mit analytischer Jacobi-Matrix ---
+def solve_implicit_step_2d(r_old, p_old, delta_t, mu, GM, tol=1e-12, max_iter=20):
+    k = delta_t**2 * GM
+    c = r_old + (delta_t / mu) * p_old  # Konstanter Vektor c_n
+    
+    # Startschätzung (expliziter Euler-Schritt)
+    r = c.copy()
+    
+    for _ in range(max_iter):
+        r_sq = np.dot(r, r)
+        r_norm = np.sqrt(r_sq)
+        r3 = r_norm**3
+        r5 = r_norm**5
+        
+        # Residuum: g(r) = r + (k / ||r||^3) * r - c
+        g = r + (k / r3) * r - c
+        if np.linalg.norm(g) < tol:
+            break
+            
+        # Analytische 2x2-Jacobi-Matrix
+        diag_base = 1.0 + k / r3
+        j11 = diag_base - 3.0 * k * (r[0]**2) / r5
+        j22 = diag_base - 3.0 * k * (r[1]**2) / r5
+        j12 = -3.0 * k * (r[0] * r[1]) / r5
+        
+        J = np.array([
+            [j11, j12],
+            [j12, j22]
+        ])
+        
+        # 2x2 lineares Gleichungssystem lösen: J * delta_r = g
+        delta_r = np.linalg.solve(J, g)
+        r -= delta_r
+        
+        if np.linalg.norm(delta_r) < tol:
+            break
+            
+    return r
+
+
+# --- 2. Hauptschleife für den impliziten Euler ---
+r_implicit = np.zeros((n_steps + 1, 2))
+p_implicit = np.zeros((n_steps + 1, 2))
+r_implicit[0] = r0
+p_implicit[0] = p0
+
+for i in range(n_steps):
+    r_old = r_implicit[i]
+    p_old = p_implicit[i]
+    
+    # Ort über eigenen 2D-Newton-Schritt berechnen
+    r_next = solve_implicit_step_2d(r_old, p_old, delta_t, mu, G * M)
+    
+    # Impuls direkt nachziehen
+    p_next = p_old + delta_t * grav_force(r_next)
+    
+    r_implicit[i + 1] = r_next
+    p_implicit[i + 1] = p_next
