@@ -1,0 +1,6 @@
+R* = 0.0114 AU,  C_min = 0.0171 AU
+scipy.root:   pasos sin solucion (C < C_min) = 66842,  pasos con sol.success = False: 67246
+Newton propio: pasos sin solucion (C < C_min) = 3,  pasos con residuo > 1e-8: 3
+Newton propio: primer paso sin solucion en t = 30.89 años, |r| = 0.0170 AU
+scipy.root:    primer paso sin solucion en t = 30.89 años, |r| = 0.0170 AU
+Distancia final: scipy.root = 0.0114 AU,  Newton propio = 1370664.6 AU
