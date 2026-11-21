@@ -1,2 +1,2 @@
-log10 del error: mínimo -12.32, máximo -6.77
-pendiente en log-log: q = -0.010
+log10 del error: mínimo -14.10, máximo -6.77
+pendiente en log-log: q = -0.001
