@@ -1,5 +1,11 @@
 scipy.optimize.root (40 orbitas):
-47.2 s ± 1.18 s per loop (mean ± std. dev. of 3 runs, 1 loop each)
+44.9 s ± 147 ms per loop (mean ± std. dev. of 3 runs, 1 loop each)
 
 Newton propio (40 orbitas):
-14.5 s ± 53.1 ms per loop (mean ± std. dev. of 3 runs, 1 loop each)
+13.7 s ± 91.4 ms per loop (mean ± std. dev. of 3 runs, 1 loop each)
+
+scipy.optimize.root (20 orbitas):
+18.8 s ± 1.11 s per loop (mean ± std. dev. of 3 runs, 1 loop each)
+
+Newton propio (20 orbitas):
+8.11 s ± 661 ms per loop (mean ± std. dev. of 3 runs, 1 loop each)
